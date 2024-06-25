@@ -1,27 +1,29 @@
-site_name: EOEPCA Document Template
-site_url: https://eoepca.readthedocs.io/projects/template/en/latest/
-repo_url: https://github.com/EOEPCA/document-template/
+site_name: Datacube Access Building Block
+site_url: https://eoepca.readthedocs.io/projects/datacube-access/en/latest/
+repo_url: https://github.com/EOEPCA/datacube-access/
 edit_uri: "edit/main/docs/"
 
 nav:
+  - EOEPCA Documentation: https://eoepca.readthedocs.io/
+  - System Architecture: https://eoepca.readthedocs.io/projects/architecture/
   - Home: home.html
-  - Building-block Name:
+  - Datacube Access:
     - index.md
-    - Getting Started:
-      - getting-started/quick-start.md
-      - getting-started/more-getting-started.md
+    # - Getting Started:
+    #   - getting-started/quick-start.md
+    #   - getting-started/more-getting-started.md
     - Design:
       - design/overview.md
       - design/more-design.md
-    - Usage:
-      - usage/tutorials.md
-      - usage/howtos.md
-    - Administration:
-      - admin/configuration.md
-      - admin/maintenance.md
-    - API:
-      - api/endpoint-specification.md
-      - api/usage.md
+    # - Usage:
+    #   - usage/tutorials.md
+    #   - usage/howtos.md
+    # - Administration:
+    #   - admin/configuration.md
+    #   - admin/maintenance.md
+    - API: https://m-mohr.github.io/geodatacube-api/
+      # - api/endpoint-specification.md
+      # - api/usage.md
 
 theme:
   # name: mkdocs
