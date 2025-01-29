@@ -1,5 +1,7 @@
 FROM python:3.12.2
 
+LABEL org.opencontainers.image.source https://github.com/EOEPCA/datacube-access
+
 ENV PROMETHEUS_MULTIPROC_DIR=/var/tmp/prometheus_multiproc_dir
 RUN mkdir $PROMETHEUS_MULTIPROC_DIR \
     && chown www-data $PROMETHEUS_MULTIPROC_DIR \
