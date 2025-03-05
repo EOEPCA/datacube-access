@@ -43,8 +43,8 @@ spec:
               value: {{ .Values.config.title }}
             - name: GDC_DESCRIPTION
               value: {{ .Values.config.description }}
-            - name: GDC_STAC_API
-              value: {{ .Values.config.stacApi | required "Please provide a config.stacApi" }}
+            - name: GDC_DATA_BACKEND
+              value: {{ .Values.config.dataBackend | required "Please provide config.dataBackend" }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}

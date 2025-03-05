@@ -72,4 +72,4 @@ config:
   id: "eoepca"
   title: "EOEPCA Data Cube Access"
   description: "EOEPCA Data Cube Access"
-  stacApi: ""
+  dataBackend: ""
