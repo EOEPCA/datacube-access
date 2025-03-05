@@ -1,103 +1,83 @@
+from typing import Annotated
+
 import httpx
-from dotenv import load_dotenv
-from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
 import uvicorn
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from dotenv import load_dotenv
+from fastapi import Depends, FastAPI, Request
+
+from .config import Config, get_config
+from .data_backend import DataBackend, get_data_backend
+
+VERSION = "0.0.1"
 
 app = FastAPI()
 load_dotenv()
 
-class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_prefix="GDC_")
 
-    id: str
-    title: str
-    description: str
-    stac_api: str
+timeout = httpx.Timeout(10.0, connect=60.0)
+limits = httpx.Limits(max_keepalive_connections=5, max_connections=20)
 
-settings = Settings()
+CLIENT = httpx.AsyncClient(timeout=timeout, limits=limits)
+
 
 @app.get("/")
-def root(request: Request):
+async def root(
+    request: Request,
+    config: Annotated[Config, Depends(get_config)],
+    data_backend: Annotated[DataBackend, Depends(get_data_backend)],
+):
+
+    conformance = ["https://m-mohr.github.io/geodatacube-api"]
+    conformance.extend(data_backend.get_conformance())
+    links = [
+        {
+            "href": request.headers["host"],
+            "rel": "self",
+            "type": "application/json",
+            "title": "This document",
+        },
+        {
+            "href": request.headers["host"],
+            "rel": "root",
+            "type": "application/json",
+            "title": "This document",
+        },
+    ]
+    links.extend(data_backend.get_links())
     return {
         "gdc_version": "1.0.0-beta",
-        "backend_version": "2.0.0-beta",
-        "stac_version": "1.0.0",
+        "backend_version": VERSION,
+        "stac_version": data_backend.get_version(),
         "api_version": "1.0.0",
         "type": "Catalog",
-        "id": settings.id,
-        "title": settings.title,
-        "description": settings.description,
-        "conformsTo": [
-            "https://m-mohr.github.io/geodatacube-api",
-            "https://api.stacspec.org/v1.0.0/core",
-            "https://api.stacspec.org/v1.0.0/collections",
-            "https://api.stacspec.org/v1.0.0/ogcapi-features",
-            "http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/core",
-            "http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/json",
-            "http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/oas30",
-            "http://www.opengis.net/spec/ogcapi-common-2/1.0/conf/collections",
-            "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core",
-            "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/oas30",
-            "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/geojson",
-            "http://www.opengis.net/spec/ogcapi-coverages-1/1.0/conf/geodata-coverage",
-            "http://www.opengis.net/spec/ogcapi-coverages-1/1.0/conf/cisjson",
-            "http://www.opengis.net/spec/ogcapi-coverages-1/1.0/conf/coverage-subset",
-            "http://www.opengis.net/spec/ogcapi-coverages-1/1.0/conf/oas30",
-        ],
-        "endpoints": [
-            {"path": "/collections", "methods": ["GET"]},
-            {"path": "/collections/{collection_id}", "methods": ["GET"]},
-            {"path": "/collections/{collection_id}/queryables", "methods": ["GET"]},
-        ],
-        "links": [
-            {
-                "href": request.headers["host"],
-                "rel": "self",
-                "type": "application/json",
-                "title": "This document",
-            },
-        ],
+        "id": config.id,
+        "title": config.title,
+        "description": config.description,
+        "conformsTo": conformance,
+        "endpoints": data_backend.get_endpoints(),
+        "links": links,
     }
 
 
 @app.get("/conformance")
-def conformance():
-    return {
-        "conformsTo": [
-            "https://m-mohr.github.io/geodatacube-api",
-            "https://api.stacspec.org/v1.0.0/core",
-            "https://api.stacspec.org/v1.0.0/collections",
-            "https://api.stacspec.org/v1.0.0/ogcapi-features",
-            "http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/core",
-            "http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/json",
-            "http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/oas30",
-            "http://www.opengis.net/spec/ogcapi-common-2/1.0/conf/collections",
-            "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core",
-            "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/oas30",
-            "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/geojson",
-            "http://www.opengis.net/spec/ogcapi-coverages-1/1.0/conf/geodata-coverage",
-            "http://www.opengis.net/spec/ogcapi-coverages-1/1.0/conf/cisjson",
-            "http://www.opengis.net/spec/ogcapi-coverages-1/1.0/conf/coverage-subset",
-            "http://www.opengis.net/spec/ogcapi-coverages-1/1.0/conf/oas30",
-        ]
-    }
+async def conformance(
+    data_backend: Annotated[DataBackend, Depends(get_data_backend)],
+):
+    conformance = ["https://m-mohr.github.io/geodatacube-api"]
+    conformance.extend(data_backend.get_conformance())
 
-@app.get("/collections", tags=["Data Discovery"])
-def collections(limit: int = 10):
-    response = httpx.get(f"{settings.stac_api}/collections", params={"limit": limit})
-    return JSONResponse(response.json(), response.status_code)
+    return {"conformsTo": conformance}
 
-@app.get("/collections/{collection_id}", tags=["Data Discovery"])
-def collection(collection_id: str):
-    response = httpx.get(f"{settings.stac_api}/collections/{collection_id}")
-    return JSONResponse(response.json(), response.status_code)
 
-@app.get("/collections/{collection_id}/queryables", tags=["Data Discovery"])
-def queryables(collection_id: str):
-    response = httpx.get(f"{settings.stac_api}/collections/{collection_id}/queryables")
-    return JSONResponse(response.json(), response.status_code)
+@app.get("/collections{rest_of_path:path}", tags=["Data Discovery"])
+async def collections(
+    data_backend: Annotated[DataBackend, Depends(get_data_backend)],
+    rest_of_path: str,
+):
+    full_path = f"/collections{rest_of_path}"
+    data = await data_backend.get_data(full_path)
+    return data
+
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)
