@@ -1,5 +1,9 @@
 # OGC Application Package STAC 1.1 Best Practices
 
+## notes
+
+- Currently listing ODC STAC 1.0 BP, these need to be rewritten to the current 1.1 STAC spec (e.g eo:bands raster:bands to just be bands)
+
 **1. Tiled Spatial Extent (e.g. Sentinel-2, dims: x, y, t, band)**
 
 | Metadata level | Minimum requirements                                                | Optimal Requirements                                                | Example datasets                                                                                 |
