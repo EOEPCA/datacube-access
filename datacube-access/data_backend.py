@@ -28,6 +28,8 @@ class DataBackend(Protocol):
 
 
 class STACAPIBackend:
+    datacube_regex = "https://stac-extensions.github.io/datacube/v2.\d.\d/schema.json"
+
     def __init__(self, url: str, response_data: dict):
         self.url = url
         self.response_data = response_data
@@ -93,7 +95,35 @@ class STACAPIBackend:
             raise HTTPException(
                 status_code=e.response.status_code, detail=e.response.text
             )
-        return response.json()
+
+        data = self.filter_stac_best_practices(response.json())
+        return data
+
+    def filter_stac_best_practices(self, data: dict) -> dict:
+        """Filter STAC best practices from the data."""
+        if "collections" in data:
+            # filtering by collection
+            best_practice_collections = []
+            for collection in data["collections"]:
+                for extension in collection.get("stac_extensions", []):
+                    if re.fullmatch(self.datacube_regex, extension) and (
+                        collection.get("cube:variables")
+                        or collection.get("cube:dimensions")
+                    ):
+                        best_practice_collections.append(collection)
+                        break
+
+            filtered_data = {
+                "links": data.get("links", []),
+                "collections": best_practice_collections,
+            }
+        elif "type" in data:
+            # filtering by item
+            filtered_data = data
+        else:
+            filtered_data = data
+
+        return filtered_data
 
 
 async def get_data_backend(
