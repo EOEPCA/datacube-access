@@ -52,8 +52,7 @@ Each asset that points to measurements should provide the fields defined below.
   - `raster:scale`
   - `raster:offset`
 
-  > [!CAUTION]
-  > The scale and offset should only be provided if the processing software explicitly has to apply the scale and the offset, e.g. for Sentinel-2 digital numbers. For netCDF files - where the scale and offset is applied automatically according to the netCDF specification - the scale and offset should **not** be provided.
+   **CAUTION:** The scale and offset should only be provided if the processing software explicitly has to apply the scale and the offset, e.g. for Sentinel-2 digital numbers. For netCDF files - where the scale and offset is applied automatically according to the netCDF specification - the scale and offset should **not** be provided.
 
 - **Classification Extension** (v2.x)
 
