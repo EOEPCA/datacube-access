@@ -76,6 +76,8 @@ async def collections(
 ):
     full_path = f"/collections{rest_of_path}"
     data = await data_backend.get_data(full_path)
+    data = data_backend.filter(data)
+
     return data
 
 

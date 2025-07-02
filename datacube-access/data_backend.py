@@ -26,6 +26,8 @@ class DataBackend(Protocol):
 
     async def get_data(self, path: str, *args, **kwargs) -> dict: ...
 
+    def filter(self, data: dict) -> dict: ...
+
 
 class STACAPIBackend:
     datacube_regex = "https://stac-extensions.github.io/datacube/v2.\d.\d/schema.json"
@@ -89,6 +91,16 @@ class STACAPIBackend:
             raise HTTPException(status_code=404, detail="Path not found")
 
         response = await CLIENT.get(f"{self.url}{path}", *args, params=kwargs)
+        while 300 <= response.status_code < 400:
+            # Handle redirects
+            if "location" not in response.headers:
+                raise HTTPException(
+                    status_code=500, detail="Redirect without location header"
+                )
+            response = await CLIENT.get(
+                response.headers["location"], *args, params=kwargs
+            )
+
         try:
             response.raise_for_status()
         except httpx.HTTPStatusError as e:
@@ -96,13 +108,12 @@ class STACAPIBackend:
                 status_code=e.response.status_code, detail=e.response.text
             )
 
-        data = self.filter_stac_best_practices(response.json())
-        return data
+        return response.json()
 
-    def filter_stac_best_practices(self, data: dict) -> dict:
+    def filter(self, data: dict) -> dict:
         """Filter STAC best practices from the data."""
         if "collections" in data:
-            # filtering by collection
+            # filtering collections
             best_practice_collections = []
             for collection in data["collections"]:
                 for extension in collection.get("stac_extensions", []):
@@ -117,10 +128,27 @@ class STACAPIBackend:
                 "links": data.get("links", []),
                 "collections": best_practice_collections,
             }
-        elif "type" in data:
-            # filtering by item
+        elif "type" in data and data["type"] == "Collection":
+            # filtering single collection
+            if (
+                "stac_extensions" in data
+                and any(
+                    re.fullmatch(self.datacube_regex, ext)
+                    for ext in data["stac_extensions"]
+                )
+                and ("cube:variables" in data or "cube:dimensions" in data)
+            ):
+                filtered_data = data
+            else:
+                raise HTTPException(
+                    status_code=400, detail="Collection does not follow best practices"
+                )
             filtered_data = data
-        else:
+        elif "type" in data and data["type"] == "FeatureCollection":
+            # filtering list of items
+            filtered_data = data
+        elif "type" in data and data["type"] == "Item":
+            # filtering single item
             filtered_data = data
 
         return filtered_data
