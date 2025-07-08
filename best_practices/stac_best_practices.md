@@ -1,4 +1,4 @@
-# EOEPCA Datacube Access Best Practices for STAC
+# STAC Best Practices (for Datacube Access in EOEPCA)
 
 This best practice defines how to load data from various source into a datacube (e.g. xarray [Python], stars [R], rasdaman, etc.) for processing purposes and how to store it after processing. It recommends how to create STAC metadata to make loading data of various types into a datacube easy and predictable. All processed results should also conform to the given best practice.
 
