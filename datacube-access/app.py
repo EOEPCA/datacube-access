@@ -8,7 +8,7 @@ from fastapi import Depends, FastAPI, Request
 from .config import Config, get_config
 from .data_backend import DataBackend, get_data_backend
 
-VERSION = "0.0.1"
+VERSION = "0.0.3"
 
 app = FastAPI()
 load_dotenv()
@@ -19,6 +19,9 @@ limits = httpx.Limits(max_keepalive_connections=5, max_connections=20)
 
 CLIENT = httpx.AsyncClient(timeout=timeout, limits=limits)
 
+# TODO - endpoints removed and merged with links
+# links should point to this endpoint and not the data backend
+
 
 @app.get("/")
 async def root(
@@ -27,7 +30,7 @@ async def root(
     data_backend: Annotated[DataBackend, Depends(get_data_backend)],
 ):
 
-    conformance = ["https://m-mohr.github.io/geodatacube-api"]
+    conformance = []
     conformance.extend(data_backend.get_conformance())
     links = [
         {
