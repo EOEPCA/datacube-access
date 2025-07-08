@@ -66,8 +66,10 @@ Each asset that points to measurements should provide the fields defined below.
 - Common metadata
   - `bands` (in the order as they should appear in the datacube)
 - Electro Optical (EO) Extension (v2.x)
-  - `name`  (as labels for the dimensions)
-  - `eo:common_name` (if available)
+  - `name`
+    
+     For users of the datacube extension, the names should also be provided as the `values` for the band dimension.
+  - `eo:common_name` (if applicable)
   - `eo:center_wavelength` and `eo:full_width_half_max`
 
 #### SAR data
@@ -88,6 +90,7 @@ Collections should contain as much information as possible to allow datacubes to
 
 - Exact spatial and temporal extents (if not provided through the datacube extension)
 - Datacube extension
+  
   The datacube extension can be used to indicate how to construct the datacube even for non-datacube data. 
   *Note: Usually only extents can be provided but no specific dimension labels.*
 - Bands (`bands`, providing the union of all available bands)
@@ -104,6 +107,7 @@ If loading from or storing to a datacube format (e.g. netCDF, ZARR, GRIB), the f
 - Datacube Extension (v2.x)
   - For a single variable: `cube:dimensions` only
   - For multiple variables: `cube:variables` and `cube:dimensions`
+    
     Each variable should be a separate datacube, no attempt should be made to combine variables automatically.
 
 ## Raster data
