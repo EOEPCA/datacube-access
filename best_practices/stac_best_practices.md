@@ -5,18 +5,36 @@ This best practice defines how to load data from various source into a datacube 
 Note: The following document is written based on the version numbers specified in the list below. The recommendations can mostly be backported to other versions of STAC and other versions of extensions. We recommend to implement the versions below though.
 
 - [STAC v1.1](https://github.com/radiantearth/stac-spec/tree/v1.1.0) with [common metadata](https://github.com/radiantearth/stac-spec/blob/v1.1.0/commons/common-metadata.md)
-- [Classification extension v2.x](https://github.com/stac-extensions/classification)
-- [Datacube extension v2.x](https://github.com/stac-extensions/datacube)
+- [Authentication Extension v1.1 (or later 1.x)](https://github.com/stac-extensions/authentication)
+- [Classification Extension v2.x](https://github.com/stac-extensions/classification)
+- [Datacube Extension v2.x](https://github.com/stac-extensions/datacube)
 - [Electro Optical (EO) Extension v2.x](https://github.com/stac-extensions/eo)
 - [Projection Extension v2.x](https://github.com/stac-extensions/projection)
 - [Raster Extension v2.x](https://github.com/stac-extensions/raster)
-- [SAR Extension v1.x](https://github.com/stac-extensions/sar)
+- [SAR Extension v1.2 (or later 1.x)](https://github.com/stac-extensions/sar)
+- [Storage Extension v2.x](https://github.com/stac-extensions/storage)
 
 ## General STAC best practices
 
 The following definitions is based on the [Open Data Cube](https://odc-stac.readthedocs.io/en/latest/stac-best-practice.html) and [GDAL inspired best practices in the projection extension](https://github.com/stac-extensions/projection?tab=readme-ov-file#best-practices).
 
 Fields should be provided in the granularity that's required for the data without duplicating information. For for example, if the data type differs per band, you'd want to provide the data type per band. If the data type is the same across all bands, provide the data type per asset.
+
+### General Data Access
+
+Two behavioral extensions are recommended that don't describe the data itself but the data access:
+
+- **Authentication Extension** (v1.1 or a later non-breaking version)
+
+  - Throughout the whole implementation, all entries in `links` and `assets` should provide a `auth:refs` whenever authentication is required. `auth:refs` refers to `auth:schemes`, which has to be provided in the same file.
+
+    Note that many authentication schemes still need additional information for authentication, e.g. OpenID Connect and OAuth need a client (client ID and secret).
+
+- **Storage Extension** (v2.x)
+
+  - Throughout the whole implementation, all entries in `assets` should provide a `storage:refs` whenever a cloud storage needs to be accessed that needs a different access mechanism than HTTP. `storage:refs` refers to `storage:schemes`, which has to be provided in the same file.
+
+    Note that the Storage Extension is still evolving and has a limited set of cloud stores defined. Please open a PR if your cloud store is not available yet.
 
 ### Items
 
