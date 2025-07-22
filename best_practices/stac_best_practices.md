@@ -70,7 +70,7 @@ Each asset that points to measurements should provide the fields defined below.
   - `raster:scale`
   - `raster:offset`
 
-   **CAUTION:** The scale and offset should only be provided if the processing software explicitly has to apply the scale and the offset, e.g. for Sentinel-2 digital numbers. For netCDF files - where the scale and offset is applied automatically according to the netCDF specification - the scale and offset should **not** be provided.
+  **CAUTION:** The scale and offset should only be provided if the processing software explicitly has to apply the scale and the offset, e.g. for Sentinel-2 digital numbers. For netCDF files - where the scale and offset is applied automatically according to the netCDF specification - the scale and offset should **not** be provided.
 
 - **Classification Extension** (v2.x)
 
@@ -81,9 +81,11 @@ Each asset that points to measurements should provide the fields defined below.
 
 #### Spectral data
 
-- Common metadata
+- **Common metadata**
+  
   - `bands` (in the order as they should appear in the datacube)
-- Electro Optical (EO) Extension (v2.x)
+- **Electro Optical (EO) Extension** (v2.x)
+  
   - `name`
     
      For users of the datacube extension, the names should also be provided as the `values` for the band dimension.
@@ -92,7 +94,7 @@ Each asset that points to measurements should provide the fields defined below.
 
 #### SAR data
 
-- SAR Extension (v1.x)
+- **SAR Extension**  (v1.2 or a later non-breaking version)
   - `sar:polarizations` (in the order as they should appear in the datacube)
 
 #### Other types of measurements
@@ -106,13 +108,13 @@ Each asset that points to measurements should provide the fields defined below.
 
 Collections should contain as much information as possible to allow datacubes to be initiated before the items get loaded. As such the following information should be provided:
 
-- Exact spatial and temporal extents (if not provided through the datacube extension)
-- Datacube extension
+- Exact **spatial and temporal extents** (if not provided through the datacube extension)
+- **Datacube extension**
   
   The datacube extension can be used to indicate how to construct the datacube even for non-datacube data. 
   *Note: Usually only extents can be provided but no specific dimension labels.*
-- Bands (`bands`, providing the union of all available bands)
-- Item Assets (`item_assets`)
+- **Bands** (`bands`, providing the union of all available bands)
+- **Item Assets** (`item_assets`)
 
 
 > [!CAUTION]
@@ -122,7 +124,8 @@ Collections should contain as much information as possible to allow datacubes to
 
 If loading from or storing to a datacube format (e.g. netCDF, ZARR, GRIB), the following is recommended:
 
-- Datacube Extension (v2.x)
+- **Datacube Extension** (v2.x)
+  
   - For a single variable: `cube:dimensions` only
   - For multiple variables: `cube:variables` and `cube:dimensions`
     
