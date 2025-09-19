@@ -62,7 +62,7 @@ Ensure homogeneous data types for the values in the datacube, choosing the most 
 
 #### Temporal Dimensions
 
-Generally, keep the temporal granularity as-is, i.e. don't combine data from a day to a single label
+Generally, keep the temporal granularity as-is, i.e., don't combine data from a day to a single label
 unless indicated differently by the user or metadata. When combining data and overlap exists,
 the user must indicate the methodology unless indicated in the metadata.
 
