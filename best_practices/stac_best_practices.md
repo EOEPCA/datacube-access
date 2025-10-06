@@ -53,7 +53,7 @@ Ensure homogeneous data types for the values in the datacube, choosing the most 
 
 #### Horizontal Spatial Dimensions
 
-- **Labels**: The labels for the x and y dimensions should be the center coordinates of the pixels.
+- **Labels**: The labels for the x and y dimensions should be the center coordinates of the pixels unless specified otherwise in metadata.
 - **Coordinate Reference System (CRS)**: Use the `proj:code`/`proj:projjson`/`proj:wkt2` properties to identify the CRS.
   If multiple items have different CRS, either create a CRS dimension or reproject to a common target CRS before loading.
 - **Resolution**: When items have different spatial resolutions:
