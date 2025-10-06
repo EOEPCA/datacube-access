@@ -49,7 +49,7 @@ When loading raster data into datacubes, the following considerations and recomm
 Generally, if different choices of strategies are possible, the implemented strategy should be documented in the metadata.
 The generation of the datacubes should be predictable.
 
-Ensure homogeneous data types for the values in the datacube, choosing the most precise data type of the data types present (e.g. float over int).
+Ensure homogeneous data types for the values in the datacube, choosing the most precise data type of the data types present.
 
 #### Horizontal Spatial Dimensions
 
