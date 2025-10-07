@@ -38,6 +38,8 @@ If loading from or storing to a datacube format (e.g. netCDF, ZARR, GRIB), the f
   
     Each variable should be a separate datacube, no attempt should be made to combine variables automatically.
 
+Example: A variable can be bands in EO data or meteorological variables like rain or temperature in meteorological data sets.
+
 ## Raster Data
 
 For raster data that is not stored in a datacube format (e.g. GeoTiff, JPEG2000) the following is recommended to transform the imagery into datacubes and vice-versa.
