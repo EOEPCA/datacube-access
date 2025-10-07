@@ -109,7 +109,8 @@ The generation of the raster files should be predictable.
 
 - Maintain original pixel grid alignment when possible
 - Include spatial reference system information in all formats
-- Tiling Strategy: Use a common tiling scheme if the data size requires it (e.g. WGS84 1° or UTM)
+- Tiling Strategy: Use a common tiling scheme if the data size requires it (e.g. WGS84 1° or UTM).
+- For larger regions, an equal-area CRS should be preferred.
 
 ##### Temporal Dimensions
 
