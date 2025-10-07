@@ -97,7 +97,7 @@ The generation of the raster files should be predictable.
 
 ##### Multi-Layer Raster Files (COG, JPEG2000, etc.)
 
-- Bands should either be all in a single file or one file per band should be created
+- Bands should be created as one file per band (or all in a single file if the file format supports it efficiently)
 - Use the layers for bands only, i.e. create separate files for each timestamp
 
 > [!NOTE]
