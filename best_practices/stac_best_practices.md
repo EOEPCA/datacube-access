@@ -59,8 +59,9 @@ Ensure homogeneous data types for the values in the datacube, choosing the most 
 - **Coordinate Reference System (CRS)**: Use the `proj:code`/`proj:projjson`/`proj:wkt2` properties to identify the CRS.
   If multiple items have different CRS, either create a CRS dimension or reproject to a common target CRS before loading.
 - **Resolution**: When items have different spatial resolutions:
-  - Choose the finest common resolution, prefer upsampling lower resolution data over downsampling higher resolution data
-  - Use `gsd`/`raster:spatial_resolution` properties to determine native resolution
+  - Choose the finest common resolution, prefer upsampling lower resolution data over downsampling higher resolution data to avoid a loss of information.
+  - Use the CRS (if a projected CRS in meters) and other projection properties (`proj:bbox` and `proj:shape`, or `proj:transform`) to determine the projected resolution. It is also the native resolution if no resampling has occurred.
+  - The `gsd` or `raster:spatial_resolution` properties are usually average resolution values and as such can only be used indicative.
 
 #### Temporal Dimensions
 
