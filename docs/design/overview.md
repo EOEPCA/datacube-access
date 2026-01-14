@@ -7,13 +7,13 @@ The Datacube Access Building Block combines existing Building Blocks to allow us
 
 - Workspace: Is used to store intermediate data, especially adapted STAC metadata to comply to the STAC Best Practices.
 
-[Resource Registration](https://eoepca.readthedocs.io/projects/resource-registration/en/latest/)
+[Resource Registration BB](https://eoepca.readthedocs.io/projects/resource-registration/en/latest/)
 - Resource Registration: Allows to register external data sources to the EOEPCA STAC API. This is crucial to make data available via EOEPCA.
 
 [Data Access BB](https://eoepca.readthedocs.io/projects/data-access/en/latest/)
 
 - STAC API: Allows searching for data sets and querrying them by spatial, temporal and thematic filters.
-- Visualization: Allows quick visualization of data cube slices. It relies on the openEO- implementation.
+- Visualization: Allows quick visualization of data cube slices. It relies on the openEO-TiTiler implementation.
 
 [Processing BB](https://eoepca.readthedocs.io/projects/processing/en/latest/)
 
