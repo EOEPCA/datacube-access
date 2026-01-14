@@ -9,19 +9,19 @@ nav:
   - Home: home.html
   - Datacube Access:
     - index.md
-    # - Getting Started:
-    #   - getting-started/quick-start.md
+    - Getting Started:
+      - getting-started/quick-start.md
     #   - getting-started/more-getting-started.md
     - Design:
       - design/overview.md
-      - design/more-design.md
+    #  - design/more-design.md
     # - Usage:
     #   - usage/tutorials.md
     #   - usage/howtos.md
     # - Administration:
     #   - admin/configuration.md
     #   - admin/maintenance.md
-    - API: https://m-mohr.github.io/geodatacube-api/
+    # - API: https://m-mohr.github.io/geodatacube-api/
       # - api/endpoint-specification.md
       # - api/usage.md
 
