@@ -10,7 +10,7 @@ nav:
   - Datacube Access:
     - index.md
     - Getting Started:
-      - getting-started/quick-start.md
+      - getting-started/end2end.md
     #   - getting-started/more-getting-started.md
     - Design:
       - design/overview.md
