@@ -24,14 +24,18 @@ The Datacube Access Building Block combines existing Building Blocks to allow us
 
 ``` mermaid
 flowchart LR
-    classDef center fill:#e3f2fd,stroke:#1e88e5,stroke-width:2px;
+    %% Background container
+    subgraph DC["Datacube Access BB"]
+        direction LR
+        RR["Resource Registration BB"]
+        DA["Data Access BB"]
+        P["Processing BB"]
 
-    W["Workspace BB"] --- DA["Datacube Access BB"]
-    R["Resource Registration BB"] --- DA
-    D["Data Access BB"] --- DA
-    P["Processing BB"] --- DA
-
-    class DA center;
+        RR -->|STAC BP| DA
+        DA -->|STAC BP| P
+        P -->|STAC BP| RR
+        W["Workspace BB"] --> RR
+    end
 ```
 
 ## STAC Best Practices
