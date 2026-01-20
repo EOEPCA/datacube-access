@@ -13,6 +13,15 @@ The Data Cube Access Building Block elaborates an end-to-end use case that shows
 
 The notebooks that make up the end-to-end use case can be found here:
 
-- Register External Data and apply STAC Best Practices: [S5P Cloud Fraction](https://github.com/EOEPCA/demo/blob/main/demoroot/notebooks/08%20Use%20Case%20External%20Data%20Registration.ipynb)
-- Register External Data and apply STAC Best Practices: S5P NO2 (WIP)
-- Process the two data sets together and register the Results: Cloud Free Monthly NO2 Means (WIP)
+**1.** Register External Data and apply STAC Best Practices: [S5P Cloud Fraction](https://github.com/EOEPCA/demo/blob/main/demoroot/notebooks/08-1%20E2E%20External%20Data%20Registration%20CF.ipynb)
+
+![End-to-end workflow cf](https://raw.githubusercontent.com/EOEPCA/demo/main/demoroot/notebooks/img/end2end_workflow_cf.png)
+
+**2.** Register External Data and apply STAC Best Practices: [S5P NO2 (WIP)](https://github.com/EOEPCA/demo/blob/main/demoroot/notebooks/08-2%20E2E%20External%20Data%20Registration%20NO2.ipynb)
+
+![End-to-end workflow no2](https://raw.githubusercontent.com/EOEPCA/demo/main/demoroot/notebooks/img/end2end_workflow_no2.png)
+
+**3.** Process the two data sets together and register the Results: [Cloud Free Monthly NO2 Means (WIP)](https://github.com/EOEPCA/demo/blob/main/demoroot/notebooks/08-3%20E2E%20Process%20Data%20Jointly.ipynb)
+
+![End-to-end workflow proc](https://raw.githubusercontent.com/EOEPCA/demo/main/demoroot/notebooks/img/end2end_workflow_proc.png)
+
