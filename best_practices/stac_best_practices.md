@@ -8,17 +8,19 @@ This best practice defines how to load data from various source (e.g., a list of
 - [General Best Practices](#general-best-practices)
 - [Datacubes](#datacubes)
 - [Raster Data](#raster-data)
-  - [Loading (Raster)](#loading-raster)
+  - [Loading](#loading)
     - [Horizontal Spatial Dimensions](#horizontal-spatial-dimensions)
     - [Temporal Dimensions](#temporal-dimensions)
+    - [Vertical Dimensions (Z-Axis)](#vertical-dimensions-z-axis)
     - [Band Dimensions](#band-dimensions)
     - [Other Dimensions](#other-dimensions)
-  - [Storing (Raster)](#storing-raster)
+  - [Storing](#storing)
     - [File Formats](#file-formats)
       - [Multi-Layer Raster Files (COG, JPEG2000, etc.)](#multi-layer-raster-files-cog-jpeg2000-etc)
       - [Datacube Formats (netCDF, ZARR)](#datacube-formats-netcdf-zarr)
-        - [netCDF](#netcdf)
+        - [netCDF / HDF5](#netcdf--hdf5)
         - [Zarr](#zarr)
+        - [GRIB / GRIB2](#grib--grib2)
     - [Dimension Handling](#dimension-handling)
       - [Horizontal Spatial Dimensions](#horizontal-spatial-dimensions-1)
       - [Temporal Dimensions](#temporal-dimensions-1)
@@ -35,11 +37,12 @@ For general STAC best practices, please see <https://github.com/radiantearth/sta
 If loading from or storing to a datacube format (e.g. netCDF, ZARR, GRIB), the following is recommended:
 
 - **Datacube Extension** (v2.x)
-  
   - For a single variable: `cube:dimensions` only
   - For multiple variables: `cube:variables` and `cube:dimensions`
   
     Each variable should be a separate datacube, no attempt should be made to combine variables automatically.
+- **STAC Item Granularity**: Consider whether a monolithic datacube store (e.g., one large Zarr) should be represented as a single STAC Item, or if temporal slices should be distinct Items using assets that index into the store via path subsets or byte-ranges.
+- **Virtual Datacubes**: Reference recipes (e.g., Kerchunk for HDF5/netCDF) or GDAL VRT files could be registered as STAC Assets with specific roles and media types ([tbd](https://github.com/stac-extensions/datacube/issues/37)). This enables cloud-native reads over legacy, unoptimized formats without data duplication.
 
 Example: A variable can be bands in EO data or meteorological variables like rain or temperature in meteorological data sets.
 
@@ -65,6 +68,7 @@ Ensure homogeneous data types for the values in the datacube, choosing the most 
   - Choose the finest common resolution, prefer upsampling lower resolution data over downsampling higher resolution data to avoid a loss of information.
   - Use the CRS (if a projected CRS in meters) and other projection properties (`proj:bbox` and `proj:shape`, or `proj:transform`) to determine the projected resolution. It is also the native resolution if no resampling has occurred.
   - The `gsd` or `raster:spatial_resolution` properties are usually average resolution values and as such can only be used indicative.
+  - **Pyramids / Multi-resolution**: If an underlying format supports internal overviews (e.g., COG) or explicit multi-scales (Zarr), loading processes should allow the user to specify a target resolution. The processing engine should match the target with the closest available overview to optimize data transfer.
 
 #### Temporal Dimensions
 
@@ -76,12 +80,19 @@ the user must indicate the methodology unless indicated in the metadata.
   - Use the `datetime` property if not `null`
   - Otherwise, use `start_datetime` and `end_datetime` and encode it as a single value through ISO8601 time intervals
 
+#### Vertical Dimensions (Z-Axis)
+
+- **Labels**: For 3D or 4D datacubes (e.g., atmospheric or oceanographic data), represent the vertical axis as a dedicated spatial dimension (e.g., `z`, `elevation`, or `pressure`).
+- Use the STAC property `unit` in the data cube extension to define the unit of measurement (e.g., meters for depth, hPa for atmospheric pressure)
+- Use the `reference_system` in the data cube extension to specify the reference datum.
+
 #### Band Dimensions
 
 Use the `bands` array to identify band information, keep the order as identified in the array.
 
 - **Labels**: Use the `name` property, if provided. Alternatively, use `eo:common_name`. As a last resort, use the array indices.
 - **Data Types**: Ensure homogeneous data types across bands, choosing the most precise one.
+  - If bands represent discrete classes (e.g., Land Cover, QA bands), map them to integer types and preserve the Classification extension metadata or colormaps (e.g., GDAL color tables, CF-convention flag meanings) to retain categorical semantic meaning.
 
 #### Other Dimensions
 
@@ -112,9 +123,11 @@ The generation of the raster files should be predictable.
 - Preserve all dimensions and their attributes, including the names.
 - Apply chunking strategies that align with the expected access patterns (e.g., spatial vs. temporal subsetting).
 
-###### netCDF
+###### netCDF / HDF5
 
-netCDF is widely used format for multi-dimensional data, but it's not cloud-optimized unless using specialized mechanisms (like HDF5 chunking with byte-range requests). Can store all STAC dimensions natively as netCDF dimensions. Follow CF Conventions for mapping coordinates and variables.
+netCDF is widely used format for multi-dimensional data, but it's not cloud-optimized unless using specialized mechanisms (like HDF5 chunking with byte-range requests). Can store all STAC dimensions natively as netCDF dimensions. Follow CF Conventions for mapping coordinates and variables. 
+
+Be aware that many EO sources (e.g., Sentinel Level-1/2, NASA swath data) may be delivered as non-projected swath grids relying on 2D tie-point arrays rather than 1D coordinate indices; loading these requires explicit resampling/geolocation workflows.
 
 ###### Zarr
 
@@ -127,6 +140,10 @@ Zarrs should follow the [GeoZarr specification](https://github.com/zarr-develope
 - the [spatial](https://github.com/zarr-conventions/spatial) convention for defining spatial dimensions and coordinates
 
 The generated STAC metadata should follow the [STAC Zarr Best Practices](https://github.com/radiantearth/stac-best-practices/blob/main/best-practices-zarr.md).
+
+###### GRIB / GRIB2
+
+GRIB files for metorological data frequently encode multi-dimensional grids (parameter, time, vertical pressure level). These should be parsed into standard datacube dimensions (`x`, `y`, `t`, `z`, and `band`/`variable`) upon loading, or converted to Zarr for cloud-native workflows. Difficulties could occur with multiple "no data" values.
 
 #### Dimension Handling
 
