@@ -8,14 +8,17 @@ This best practice defines how to load data from various source (e.g., a list of
 - [General Best Practices](#general-best-practices)
 - [Datacubes](#datacubes)
 - [Raster Data](#raster-data)
-  - [Loading](#loading)
+  - [Loading (Raster)](#loading-raster)
     - [Horizontal Spatial Dimensions](#horizontal-spatial-dimensions)
     - [Temporal Dimensions](#temporal-dimensions)
     - [Band Dimensions](#band-dimensions)
     - [Other Dimensions](#other-dimensions)
-  - [Storing](#storing)
+  - [Storing (Raster)](#storing-raster)
     - [File Formats](#file-formats)
       - [Multi-Layer Raster Files (COG, JPEG2000, etc.)](#multi-layer-raster-files-cog-jpeg2000-etc)
+      - [Datacube Formats (netCDF, ZARR)](#datacube-formats-netcdf-zarr)
+        - [netCDF](#netcdf)
+        - [Zarr](#zarr)
     - [Dimension Handling](#dimension-handling)
       - [Horizontal Spatial Dimensions](#horizontal-spatial-dimensions-1)
       - [Temporal Dimensions](#temporal-dimensions-1)
@@ -103,8 +106,27 @@ The generation of the raster files should be predictable.
 - Bands should be created as one file per band (or all in a single file if the file format supports it efficiently)
 - Use the layers for bands only, i.e. create separate files for each timestamp
 
-> [!NOTE]
-> More file formats should be added here, please provide feedback and proposals.
+##### Datacube Formats (netCDF, ZARR)
+
+- Map original bands/variables directly to data variables within the file.
+- Preserve all dimensions and their attributes, including the names.
+- Apply chunking strategies that align with the expected access patterns (e.g., spatial vs. temporal subsetting).
+
+###### netCDF
+
+netCDF is widely used format for multi-dimensional data, but it's not cloud-optimized unless using specialized mechanisms (like HDF5 chunking with byte-range requests). Can store all STAC dimensions natively as netCDF dimensions. Follow CF Conventions for mapping coordinates and variables.
+
+###### Zarr
+
+Zarr is recommended over netCDF as it offers cloud-native storage and streaming of multidimensional arrays efficiently in chunked, object-based storage.
+
+Zarrs should follow the [GeoZarr specification](https://github.com/zarr-developers/geozarr-spec) and implement at least:
+
+- the [geo-proj](https://github.com/zarr-conventions/geo-proj) convention for proper coordinate reference system definitions
+- the [multiscales](https://github.com/zarr-conventions/multiscales) convention for more efficient pyramid-based processing depending on the level of detail
+- the [spatial](https://github.com/zarr-conventions/spatial) convention for defining spatial dimensions and coordinates
+
+The generated STAC metadata should follow the [STAC Zarr Best Practices](https://github.com/radiantearth/stac-best-practices/blob/main/best-practices-zarr.md).
 
 #### Dimension Handling
 
