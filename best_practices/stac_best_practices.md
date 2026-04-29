@@ -1,6 +1,6 @@
 # STAC Best Practices (for Datacube Access in EOEPCA) <!-- omit in toc -->
 
-This best practice defines how to load data from various source (e.g., a list of GeoTIFF files) into a datacube (e.g. xarray [Python], stars [R], rasdaman, etc.) for processing purposes and how to store it after processing. It recommends how to create STAC metadata to make loading data of various types into a datacube easy and predictable. All processed results should also conform to the given best practice.
+This best practice defines how to load data from various sources (e.g., a list of GeoTIFF files) into a datacube (e.g. xarray [Python], stars [R], rasdaman, etc.) for processing purposes and how to store it after processing. It recommends how to create STAC metadata to make loading data of various types into a datacube easy and predictable. All processed results should also conform to the given best practice.
 
 > [!WARNING]
 > This document is an early draft. Please provide feedback.
@@ -111,7 +111,7 @@ For other dimensions, the datacube extension must be provided.
 
 To destruct a datacube into (multiple) raster files, the following considerations and recommendations should be implemented.
 
-All files should be encompanied by corresponding STAC files that implement the
+All files should be accompanied by corresponding STAC files that implement the
 [STAC Metadata and Extension Best Practices](https://github.com/radiantearth/stac-best-practices/blob/main/metadata.md).
 
 Prefer cloud-optimized formats (e.g. COG or Zarr) for better remote access performance.
@@ -198,7 +198,7 @@ When loading vector data into datacubes (e.g., from GeoParquet, FlatGeoBuf, or G
 
 #### Temporal Dimensions
 
-- If temporal attributes exist as properties in the vector feature collection, promote those properties to a standard temporal dimension (e.g., `t`). Vector data usually spans a date range per STAC Item and as such the `datetime` property in STAC can't use used to populate the temporal dimensions.
+- If temporal attributes exist as properties in the vector feature collection, promote those properties to a standard temporal dimension (e.g., `t`). Vector data usually spans a date range per STAC Item and as such the `datetime` property in STAC can't be used to populate the temporal dimensions.
 - Keep the temporal resolution as-is unless consolidation is specified.
 
 Otherwise, the same definitions as for raster data apply.
@@ -227,7 +227,7 @@ These formats natively support more than 2 dimensions, making them strong candid
 
 Zarrs should follow the [GeoZarr specification](https://github.com/zarr-developers/geozarr-spec) as much as possible. Make use of the [geo-proj](https://github.com/zarr-conventions/geo-proj) convention for proper coordinate reference system definitions.
 
-The [multiscales](https://github.com/zarr-conventions/multiscales) and the [spatial](https://github.com/zarr-conventions/spatial) have the caveat to be centered around raster data. In theory, both should be usable for vector data as the raster specific properties are not required and could be omitted. In practice this hasn't been proven or well-defined yet. See also [1](https://github.com/zarr-conventions/multiscales/issues/34) and [2](https://github.com/zarr-developers/geozarr-spec/issues/135).
+The [multiscales](https://github.com/zarr-conventions/multiscales) and the [spatial](https://github.com/zarr-conventions/spatial) conventions have the caveat of being centered around raster data. In theory, both should be usable for vector data as the raster specific properties are not required and could be omitted. In practice this hasn't been proven or well-defined yet. See also [1](https://github.com/zarr-conventions/multiscales/issues/34) and [2](https://github.com/zarr-developers/geozarr-spec/issues/135).
 
 The generated STAC metadata should follow the [STAC Zarr Best Practices](https://github.com/radiantearth/stac-best-practices/blob/main/best-practices-zarr.md) as much as it is defined for vector data.
 
