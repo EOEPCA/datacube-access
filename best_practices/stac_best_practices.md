@@ -242,3 +242,13 @@ Because tabular formats do not naturally support multi-dimensional nesting (e.g.
 GeoParquet and FlatGeoBuf are the recommended options for being cloud-native.
 GeoPackage can be used when compatibility with legacy GIS software is strictly required.
 Usage of Shapefiles is strongly discouraged for datacube storage as it is subject to numerous limitations: 2GB maximum file sizes, 10-character attribute name constraints, and lack of robust temporal types.
+
+## Point Clouds
+
+> [!NOTE]
+> The STAC best practices for point clouds have not been defined yet.
+> Contributions would be welcome, please open a Pull Request.
+> The [STAC Point Cloud Extension](https://github.com/stac-extensions/pointcloud)
+> in combination with the STAC Data Cube Extension provide a solid foundation for loading
+> point cloud data into datacubes though.
+> Thus, it's recommended to provide these to extensions when creating STAC Items for point cloud data.
