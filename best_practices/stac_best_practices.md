@@ -1,6 +1,6 @@
 # STAC Best Practices (for Datacube Access in EOEPCA) <!-- omit in toc -->
 
-This best practice defines how to load data from various sources (e.g., a list of GeoTIFF files) into a datacube (e.g. xarray [Python], stars [R], rasdaman, etc.) for processing purposes and how to store it after processing. It recommends how to create STAC metadata to make loading data of various types into a datacube easy and predictable. All processed results should also conform to the given best practice.
+This best practice defines how to load data from various sources (e.g., a list of GeoTIFF files) into a datacube (e.g. xarray \[Python], stars \[R], rasdaman, etc.) for processing purposes and how to store it after processing. It recommends how to create STAC metadata to make loading data of various types into a datacube easy and predictable. All processed results should also conform to the given best practice.
 
 - [General Best Practices](#general-best-practices)
 - [Datacubes](#datacubes)
@@ -55,7 +55,7 @@ Example: A variable can be bands in EO data or meteorological variables like rai
 
 ## Raster Data
 
-For raster data that is not stored in a datacube format (e.g. GeoTiff, JPEG2000) the following is recommended to transform the imagery into datacubes and vice-versa.
+For raster data that is not stored in a datacube format (e.g. GeoTiff, JPEG2000) the following best practices are recommended to transform the imagery into datacubes and vice-versa. It is based on implementations like [`odc-stac`](https://odc-stac.readthedocs.io/en/latest/) (Python) and the [openEO implementations](https://openeo.org).
 
 ### Loading (Raster)
 
@@ -178,7 +178,7 @@ GRIB files for metorological data frequently encode multi-dimensional grids (par
 
 ## Vector Data
 
-> [!ATTENTION]
+> [!NOTE]
 > The STAC best practices for vector data are based on a limited number of implementations.
 > We'll fine-tune this best practice as we gain more experience.
 > Feeback would be welcome, please open an [issue or pull request](https://github.com/EOEPCA/datacube-access).
