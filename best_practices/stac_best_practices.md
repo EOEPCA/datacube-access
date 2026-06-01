@@ -1,21 +1,18 @@
 # STAC Best Practices (for Datacube Access in EOEPCA) <!-- omit in toc -->
 
-This best practice defines how to load data from various source (e.g., a list of GeoTIFF files) into a datacube (e.g. xarray [Python], stars [R], rasdaman, etc.) for processing purposes and how to store it after processing. It recommends how to create STAC metadata to make loading data of various types into a datacube easy and predictable. All processed results should also conform to the given best practice.
-
-> [!WARNING]
-> This document is an early draft. Please provide feedback.
+This best practice defines how to load data from various sources (e.g., a list of GeoTIFF files) into a datacube (e.g. xarray [Python], stars [R], rasdaman, etc.) for processing purposes and how to store it after processing. It recommends how to create STAC metadata to make loading data of various types into a datacube easy and predictable. All processed results should also conform to the given best practice.
 
 - [General Best Practices](#general-best-practices)
 - [Datacubes](#datacubes)
 - [Raster Data](#raster-data)
-  - [Loading](#loading)
+  - [Loading (Raster)](#loading-raster)
     - [Horizontal Spatial Dimensions](#horizontal-spatial-dimensions)
     - [Temporal Dimensions](#temporal-dimensions)
     - [Vertical Dimensions (Z-Axis)](#vertical-dimensions-z-axis)
     - [Band Dimensions](#band-dimensions)
     - [Other Dimensions](#other-dimensions)
-  - [Storing](#storing)
-    - [File Formats](#file-formats)
+  - [Storing (Raster)](#storing-raster)
+    - [Raster File Formats](#raster-file-formats)
       - [Multi-Layer Raster Files (COG, JPEG2000, etc.)](#multi-layer-raster-files-cog-jpeg2000-etc)
       - [Datacube Formats (netCDF, ZARR)](#datacube-formats-netcdf-zarr)
         - [netCDF / HDF5](#netcdf--hdf5)
@@ -27,14 +24,24 @@ This best practice defines how to load data from various source (e.g., a list of
       - [Band Dimensions](#band-dimensions-1)
       - [Other Dimensions](#other-dimensions-1)
 - [Vector Data](#vector-data)
+  - [Loading (Vector)](#loading-vector)
+    - [Spatial Dimension(s)](#spatial-dimensions)
+    - [Temporal Dimensions](#temporal-dimensions-2)
+    - [Other Dimensions (Variables/Properties)](#other-dimensions-variablesproperties)
+  - [Storing (Vector)](#storing-vector)
+    - [Vector File Formats](#vector-file-formats)
+      - [Datacube Formats (netCDF, Zarr)](#datacube-formats-netcdf-zarr-1)
+        - [Zarr](#zarr-1)
+      - [Tabular Formats (GeoParquet, FlatGeoBuf, etc.)](#tabular-formats-geoparquet-flatgeobuf-etc)
+- [Point Clouds](#point-clouds)
 
 ## General Best Practices
 
-For general STAC best practices, please see <https://github.com/radiantearth/stac-best-practices/blob/main/metadata.md>.
+It is recommended to follow the STAC best practices, see <https://github.com/radiantearth/stac-best-practices/blob/main/metadata.md>.
 
 ## Datacubes
 
-If loading from or storing to a datacube format (e.g. netCDF, ZARR, GRIB), the following is recommended:
+If loading from or storing to a datacube format (e.g. netCDF, Zarr, GRIB), the following is recommended:
 
 - **Datacube Extension** (v2.x)
   - For a single variable: `cube:dimensions` only
@@ -50,7 +57,7 @@ Example: A variable can be bands in EO data or meteorological variables like rai
 
 For raster data that is not stored in a datacube format (e.g. GeoTiff, JPEG2000) the following is recommended to transform the imagery into datacubes and vice-versa.
 
-### Loading
+### Loading (Raster)
 
 When loading raster data into datacubes, the following considerations and recommendations should be implemented.
 
@@ -98,19 +105,19 @@ Use the `bands` array to identify band information, keep the order as identified
 
 For other dimensions, the datacube extension must be provided.
 
-### Storing
+### Storing (Raster)
 
 To destruct a datacube into (multiple) raster files, the following considerations and recommendations should be implemented.
 
-All files should be encompanied by corresponding STAC files that implement the
+All files should be accompanied by corresponding STAC files that implement the
 [STAC Metadata and Extension Best Practices](https://github.com/radiantearth/stac-best-practices/blob/main/metadata.md).
 
-Prefer cloud-optimized formats (e.g. COG or ZARR) for better remote access performance.
+Prefer cloud-optimized formats (e.g. COG or Zarr) for better remote access performance.
 
 Generally, if different choices of strategies are possible, the implemented strategy should be documented in the metadata.
 The generation of the raster files should be predictable.
 
-#### File Formats
+#### Raster File Formats
 
 ##### Multi-Layer Raster Files (COG, JPEG2000, etc.)
 
@@ -171,7 +178,80 @@ GRIB files for metorological data frequently encode multi-dimensional grids (par
 
 ## Vector Data
 
-For vector data that is not stored in a datacube format (e.g. GeoParquet) the following is recommended to transform the geometries and their properties into datacubes and vice-versa.
+> [!ATTENTION]
+> The STAC best practices for vector data are based on a limited number of implementations.
+> We'll fine-tune this best practice as we gain more experience.
+> Feeback would be welcome, please open an [issue or pull request](https://github.com/EOEPCA/datacube-access).
+
+For vector data that is not stored in a datacube format the following is recommended to transform the geometries and their properties into datacubes and vice-versa.
+
+Datacube construction for vector data revolves around treating geometries as a single spatial dimension (e.g., `geometry`) rather than the typical `x` and `y` axes used in regular raster grids. This aligns with tools like [`xvec`](https://xvec.readthedocs.io/en/stable/io.html) (Python) and [`stars`](https://r-spatial.github.io/stars/) (R).
+
+### Loading (Vector)
+
+When loading vector data into datacubes (e.g., from GeoParquet, FlatGeoBuf, or GeoJSON), the following considerations should be implemented.
+
+#### Spatial Dimension(s)
+
+- **Geometry Types**: Use `vector:geometry_types` to identify the geometry types present in the dataset. This can be useful for optimizations and visualizations.
+- **Labels**: Use a single core dimension (e.g., `geometry`) to represent the geometries. The coordinates/labels for this dimension should represent the unique identifier, explicit geometries encoded e.g. as WKT, or the feature indices.
+- **Coordinate Reference System (CRS)**: Use the `proj:code`/`proj:projjson`/`proj:wkt2` properties to identify the CRS.
+  If multiple geometries or items have different CRS, either create a CRS dimension or reproject to a common target CRS before loading.
+- **Resolution**: Use the properties `vector:mmu`, `vector:mmw`, and `vector:reference_scale` to identify the baseline for further vector operations and precision of coordinates.
+
+#### Temporal Dimensions
+
+- If temporal attributes exist as properties in the vector feature collection, promote those properties to a standard temporal dimension (e.g., `t`). Vector data usually spans a date range per STAC Item and as such the `datetime` property in STAC can't be used to populate the temporal dimensions.
+- Keep the temporal resolution as-is unless consolidation is specified.
+
+Otherwise, the same definitions as for raster data apply.
+
+#### Other Dimensions (Variables/Properties)
+
+The datacube extension must be provided.
+
+- Feature attributes (properties) should be mapped as discrete variables indexed along the spatial and temporal dimensions.
+- Map data types to homogeneous arrays, picking the most precise data type.
+
+### Storing (Vector)
+
+When persisting vector datacubes back to disk, the capabilities heavily depend on the targeted file format. Vector data presents a unique challenge when mapping multi-dimensional arrays (like Time × Geometry × Variables) onto formats that were historically designed for simple tabular or relational data.
+
+#### Vector File Formats
+
+##### Datacube Formats (netCDF, Zarr)
+
+These formats natively support more than 2 dimensions, making them strong candidates for multidimensional vector data.
+
+- Recommended approach involves translating the `geometry` dimension following standard conventions like the CF Conventions for Discrete Sampling Geometries (DSG) or GeoZarr.
+- Because discrete geometries vary in coordinate length (e.g., a simple Poly vs MultiPolygon), store the geometry column using Well-Known Binary (WKB) format in fixed or variable-length byte arrays, or use ragged array representations.
+
+###### Zarr
+
+Zarrs should follow the [GeoZarr specification](https://github.com/zarr-developers/geozarr-spec) as much as possible. Make use of the [geo-proj](https://github.com/zarr-conventions/geo-proj) convention for proper coordinate reference system definitions.
+
+The [multiscales](https://github.com/zarr-conventions/multiscales) and the [spatial](https://github.com/zarr-conventions/spatial) conventions have the caveat of being centered around raster data. In theory, both should be usable for vector data as the raster specific properties are not required and could be omitted. In practice this hasn't been proven or well-defined yet. See also [1](https://github.com/zarr-conventions/multiscales/issues/34) and [2](https://github.com/zarr-developers/geozarr-spec/issues/135).
+
+The generated STAC metadata should follow the [STAC Zarr Best Practices](https://github.com/radiantearth/stac-best-practices/blob/main/best-practices-zarr.md) as much as it is defined for vector data.
+
+##### Tabular Formats (GeoParquet, FlatGeoBuf, etc.)
+
+With tabular file formats, the [table extension](https://github.com/stac-extensions/table) should be provided.
+
+Tabular formats are heavily optimized for vector data but represent data structurally as tables.
+
+Because tabular formats do not naturally support multi-dimensional nesting (e.g., a matrix of time-series data per geometry feature), dimensions must be flattened for storage. You must "stack" the datacube by either repeating geometries for each time step or storing time-series attributes as array-typed columns within a single row per geometry.
+
+GeoParquet and FlatGeoBuf are the recommended options for being cloud-native.
+GeoPackage can be used when compatibility with legacy GIS software is strictly required.
+Usage of Shapefiles is strongly discouraged for datacube storage as it is subject to numerous limitations: 2GB maximum file sizes, 10-character attribute name constraints, and lack of robust temporal types.
+
+## Point Clouds
 
 > [!NOTE]
-> Details will be provided in the next iteration.
+> The STAC best practices for point clouds have not been defined yet.
+> Contributions would be welcome, please open a Pull Request.
+> The [STAC Point Cloud Extension](https://github.com/stac-extensions/pointcloud)
+> in combination with the STAC Data Cube Extension provide a solid foundation for loading
+> point cloud data into datacubes though.
+> Thus, it's recommended to provide these to extensions when creating STAC Items for point cloud data.
