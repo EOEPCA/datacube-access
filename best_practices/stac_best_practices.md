@@ -2,9 +2,6 @@
 
 This best practice defines how to load data from various sources (e.g., a list of GeoTIFF files) into a datacube (e.g. xarray [Python], stars [R], rasdaman, etc.) for processing purposes and how to store it after processing. It recommends how to create STAC metadata to make loading data of various types into a datacube easy and predictable. All processed results should also conform to the given best practice.
 
-> [!WARNING]
-> This document is an early draft. Please provide feedback.
-
 - [General Best Practices](#general-best-practices)
 - [Datacubes](#datacubes)
 - [Raster Data](#raster-data)
@@ -33,13 +30,14 @@ This best practice defines how to load data from various sources (e.g., a list o
     - [Other Dimensions (Variables/Properties)](#other-dimensions-variablesproperties)
   - [Storing (Vector)](#storing-vector)
     - [Vector File Formats](#vector-file-formats)
-      - [Datacube Formats (netCDF, Zarr)](#datacube-formats-netcdf-zarr)
-        - [Zarr](#zarr)
+      - [Datacube Formats (netCDF, Zarr)](#datacube-formats-netcdf-zarr-1)
+        - [Zarr](#zarr-1)
       - [Tabular Formats (GeoParquet, FlatGeoBuf, etc.)](#tabular-formats-geoparquet-flatgeobuf-etc)
+- [Point Clouds](#point-clouds)
 
 ## General Best Practices
 
-For general STAC best practices, please see <https://github.com/radiantearth/stac-best-practices/blob/main/metadata.md>.
+It is recommended to follow the STAC best practices, see <https://github.com/radiantearth/stac-best-practices/blob/main/metadata.md>.
 
 ## Datacubes
 
@@ -179,6 +177,11 @@ GRIB files for metorological data frequently encode multi-dimensional grids (par
   Document the variability of the CRS in the collection metadata (`summaries`).
 
 ## Vector Data
+
+> [!ATTENTION]
+> The STAC best practices for vector data are based on a limited number of implementations.
+> We'll fine-tune this best practice as we gain more experience.
+> Feeback would be welcome, please open an [issue or pull request](https://github.com/EOEPCA/datacube-access).
 
 For vector data that is not stored in a datacube format the following is recommended to transform the geometries and their properties into datacubes and vice-versa.
 
